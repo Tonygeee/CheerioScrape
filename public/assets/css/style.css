@@ -1,0 +1,43 @@
+/* Navbar */
+
+.navbar {
+    margin-bottom: 0;
+}
+
+
+/* Scraper link */
+
+#scraper-link {
+    color: #B94A48;
+}
+
+
+/* Jumbotron */
+
+.jumbotron {
+    text-align: center;
+    background-image: url("../images/newspaper.jpg");
+    opacity: 0.8;
+    background-size: 100%;
+    color: #3A87AD;
+}
+
+
+/* Footer */
+
+.footer {
+    padding: 30px 0;
+    text-align: center;
+}
+
+
+/* */
+#articles {
+    overflow: auto;
+    height: 500px;
+}
+
+textarea,
+input {
+    width: 100%;
+}
