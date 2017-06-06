@@ -41,9 +41,8 @@
 											</h3>
 										</div>
 										<!--<div class="col-md-2">
-											<form action="/saved/{{this.id}}?_method=PUT" method="POST">
-												<input type="hidden" name="delete-btn" value="{{this.id}}">
-												<button type="button" class="add-note-btn btn btn-success" data-toggle="modal" data-target="#myModal" id="comment-btn">
+											<form action="/saved/{{this.id}}" method="POST">
+												<button type="submit" class="add-note-btn btn btn-success" data-toggle="modal" data-target="#myModal" id="comment-btn">
 													Comment
 												</button>
 											</form>
@@ -67,7 +66,37 @@
 				{{/each}}
 				</div>
 			
-			<div class="col-md-3" id="notes">
+			<div class="col-md-3" id="all-notes">
+				{{#each note}}
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<div class="row">
+										<div class="col-md-10">
+											<h3 class="note-title panel-title" data-id="{{this.id}}">
+												{{this.title}}
+											</h3>
+										</div>
+										
+									    <div class="col-md-2">
+												<form action="/note/{{this.id}}?_method=PUT" method="POST">
+							          	<input type="hidden" name="delete-btn">
+							          	<button type="submit" class="delete-btn btn btn-danger">Delete Note</button>
+							        	</form>
+									    </div>
+				        		</div>
+								</div>
+
+								<div class="note-body panel-body">
+									{{this.body}}
+								</div>
+							</div>
+						</div>
+			    </div>
+				{{/each}}
+				<div id="notes">
+				</div>
 			</div>
 
 		</div>
