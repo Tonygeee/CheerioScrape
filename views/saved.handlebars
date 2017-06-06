@@ -1,0 +1,106 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+	  <div class="container-fluid">
+	    <div class="navbar-header">
+	      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+	        <span class="sr-only">Toggle navigation</span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	      </button>
+	      <a class="navbar-brand" href="#">Mongo Scraper</a>
+	    </div>
+
+	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+	      <ul class="nav navbar-nav">
+	        <li><a href="/">Home</a></li>
+	        <li class="active"><a href="/saved">Saved Articles<span class="sr-only">(current)</span></a></li>
+	      </ul>
+	    </div>
+	  </div>
+	</nav>
+
+	<div class="jumbotron">
+	  <h1 class="text-info">Saved Articles</h1>
+	  <p class="text-info">New York Times Edition</p>
+	</div>
+
+	<div class="container" id="wrapper">			
+		<div class="row">
+			<div class="col-md-9">
+				<h1>NYT Articles</h1>
+				<h2>Click the article title to add a note.</h2>
+				{{#each article}}
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<div class="row">
+										<div class="col-md-10">
+											<h3 class="article-title panel-title" data-id="{{this.id}}">
+												{{this.title}}
+											</h3>
+										</div>
+										<!--<div class="col-md-2">
+											<form action="/saved/{{this.id}}?_method=PUT" method="POST">
+												<input type="hidden" name="delete-btn" value="{{this.id}}">
+												<button type="button" class="add-note-btn btn btn-success" data-toggle="modal" data-target="#myModal" id="comment-btn">
+													Comment
+												</button>
+											</form>
+									  </div>-->
+										
+									    <div class="col-md-2">
+												<form action="/delete/{{this.id}}?_method=PUT" method="POST">
+							          	<input type="hidden" name="delete-btn" value="false">
+							          	<button type="submit" class="delete-btn btn btn-danger">Delete Article</button>
+							        	</form>
+									    </div>
+				        		</div>
+								</div>
+
+								<div class="article-link panel-body">
+									Link: {{this.link}}
+								</div>
+							</div>
+						</div>
+			    </div>
+				{{/each}}
+				</div>
+			
+			<div class="col-md-3" id="notes">
+			</div>
+
+		</div>
+
+			<!-- Modal -->
+			<!--<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="article-notes-modal">
+			  <div class="modal-dialog" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title" id="article-notes-modal">Notes For Article: </h4>
+			      </div>
+			      <div class="modal-body">
+							{{#each note}}
+								<div class="panel-body" id="notes">
+									{{this.articles.id}}
+									{{this.noteBody}}
+								</div>
+							{{/each}}
+							<form action="/articles/{{this.id}}" method="POST">
+								<textarea type="text" name="note"></textarea>
+								<button type="submit" class="btn btn-primary">Save Note</button>
+							</form>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			      </div>
+			    </div>
+			  </div>
+			</div>-->
+	</div>
+
+	<footer class="footer">
+	<div class="container" id="footer-text">
+		<p class="text-muted">Copyright &reg; 2017 Nicole Lockwood</p>
+	</div>

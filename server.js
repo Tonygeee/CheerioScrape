@@ -2,6 +2,7 @@
 var express = require("express");
 var exphbs = require("express-handlebars");
 var bodyParser = require("body-parser");
+var logger = require("morgan");
 var methodOverride = require("method-override");
 var mongoose = require("mongoose");
 // Models
@@ -18,6 +19,9 @@ mongoose.Promise = Promise;
 // SETTING UP THE EXPRESS APP
 var app = express();
 var PORT = process.env.PORT || 3000;
+
+// Setting up the Express app with morgan
+app.use(logger("dev"));
 
 // Setting up the Express app to handle data parsing
 app.use(bodyParser.json());
@@ -62,7 +66,7 @@ db.once("open", function() {
 // A GET request to scrape the NYT website
 app.get("/scrape", function(req, res) {
   // Grabbing the body of the html with request
-  request("http://www.nytimes.com/", function(error, response, html) {
+  request("https://www.nytimes.com/", function(error, response, html) {
     // Loading that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(html);
     // Grabbing every h2 within an article tag
@@ -94,46 +98,101 @@ app.get("/scrape", function(req, res) {
     });
   });
   // Telling the browser that we finished scraping the text
-  res.send("Scrape Complete");
+  res.redirect("/");
 });
 
 // This will get the articles we scraped from the mongoDB
-app.get("/articles", function(req, res) {
+app.get("/", function(req, res) {
   // Grab every doc in the Articles array
   Article.find({}, function(error, doc) {
     // Log any errors
     if (error) {
       console.log(error);
     }
-    // Or send the doc to the browser as a json object
+    // Or send the doc to the browser
     else {
-      res.json(doc);
+      var articleObj = {
+        article: doc
+      };
+      res.render("index", articleObj);
     }
-  });
+  }).
+  sort({ title: 1 }).
+  limit(15);
 });
 
-// Grab an article by it's ObjectId
-app.get("/articles/:id", function(req, res) {
-  // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
-  Article.findOne({ "_id": req.params.id })
-  // ..and populate all of the notes associated with it
-  .populate("note")
-  // now, execute our query
-  .exec(function(error, doc) {
+app.put("/:id", function(req, res) {
+  // Use the article id to find and update it's status to "saved"
+  Article.findOneAndUpdate({ "_id": req.params.id }, { "saved": req.body.saved })
+  // Execute the above query
+    .exec(function(err, doc) {
+      // Log any errors
+      if (err) {
+        console.log(err);
+      }
+      else {
+        // Or send the document to the browser
+        console.log(doc);
+      }
+    });
+    res.redirect("/");
+});
+
+app.get("/saved", function(req, res) {
+  // Grab every doc in the Articles array that is saved
+  Article.find({ saved: true }, function(error, doc) {
     // Log any errors
     if (error) {
       console.log(error);
     }
-    // Otherwise, send the doc to the browser as a json object
+    // Or send the doc to the browser
+    else {
+      var articleObj = {
+        article: doc
+      };
+      res.render("saved", articleObj);
+    }
+  });
+});
+
+app.put("/delete/:id", function(req, res) {
+  // Delete an article based on it's ObjectId
+  Article.findOneAndUpdate({ "_id": req.params.id }, { "saved": req.body.saved })
+  // Execute the above query
+    .exec(function(err, doc) {
+      // Log any errors
+      if (err) {
+        console.log(err);
+      }
+      else {
+        // Or send the document to the browser
+        console.log(doc);
+      }
+    });
+  res.redirect("/saved");
+});
+
+// Grab an article by it's ObjectId
+app.get("/saved/:id", function(req, res) {
+  // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
+  Article.findOne({ "_id": req.params.id })
+  // Populating all of the notes associated with it
+  .populate("note")
+  // Executing the query
+  .exec(function(error, doc) {
+    // Logging any errors
+    if (error) {
+      console.log(error);
+    }
+    // Sending the doc to the browser as a JSON object
     else {
       res.json(doc);
     }
   });
 });
 
-
 // Create a new note or replace an existing note
-app.post("/articles/:id", function(req, res) {
+app.post("/saved/:id", function(req, res) {
   // Create a new note and pass the req.body to the entry
   var newNote = new Note(req.body);
 
@@ -158,6 +217,23 @@ app.post("/articles/:id", function(req, res) {
           res.send(doc);
         }
       });
+    }
+  });
+});
+
+app.get("/saved/:id", function(req, res) {
+  // Grab every doc in the Articles array that is saved
+  Note.find({ saved: true }, function(error, doc) {
+    // Log any errors
+    if (error) {
+      console.log(error);
+    }
+    // Or send the doc to the browser
+    else {
+      var articleObj = {
+        article: doc
+      };
+      res.render("saved", articleObj);
     }
   });
 });
