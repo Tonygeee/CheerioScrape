@@ -47,8 +47,8 @@ app.set("view engine", "handlebars");
 /*******************************************/
 // CONFIGURING DB
 // Database configuration with mongoose
-mongoose.connect("mongodb://localhost/articles_db");
-//mongoose.connect("mongodb://heroku_96srcnwp:k9vqebtelagn88jf1lbiba95c@ds155091.mlab.com:55091/heroku_96srcnwp");
+//mongoose.connect("mongodb://localhost/articles_db");
+mongoose.connect("mongodb://heroku_96srcnwp:k9vqebtelagn88jf1lbiba95c@ds155091.mlab.com:55091/heroku_96srcnwp");
 var db = mongoose.connection;
 
 // Show any mongoose errors
