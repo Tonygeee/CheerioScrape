@@ -47,8 +47,8 @@ app.set("view engine", "handlebars");
 /*******************************************/
 // CONFIGURING DB
 // Database configuration with mongoose
-//mongoose.connect("mongodb://localhost/articles_db");
-mongoose.connect("mongodb://heroku_96srcnwp:k9vqebtelagn88jf1lbiba95c@ds155091.mlab.com:55091/heroku_96srcnwp");
+mongoose.connect("mongodb://localhost/articles_db");
+//mongoose.connect("mongodb://heroku_96srcnwp:k9vqebtelagn88jf1lbiba95c@ds155091.mlab.com:55091/heroku_96srcnwp");
 var db = mongoose.connection;
 
 // Show any mongoose errors
@@ -117,8 +117,8 @@ app.get("/", function(req, res) {
       res.render("index", articleObj);
     }
   }).
-  sort({ title: 1 }).
-  limit(20);
+  sort({ datePulled: -1, title: 1}).
+  limit(30);
 });
 
 // Using a PUT request to save articles
@@ -132,8 +132,8 @@ app.put("/:id", function(req, res) {
         console.log(err);
       }
       else {
-        // Sending the doc to the browser
-        console.log(doc);
+        // Logging to confirm "saved" status was successfully changed
+        console.log("Successfully saved: '%s'", doc.title);
       }
     });
     res.redirect("/");
@@ -141,44 +141,8 @@ app.put("/:id", function(req, res) {
 
 // Using a GET request to pull the saved articles
 app.get("/saved", function(req, res) {
-  // Grab every doc in the Articles array that is saved
+  // Grabbing every doc in the Articles array that is saved
   Article.find({ saved: true }, function(error, doc) {
-    // Log any errors
-    if (error) {
-      console.log(error);
-    }
-    // Or send the doc to the browser
-    else {
-      var articleObj = {
-        article: doc
-      };
-      res.render("saved", articleObj);
-    }
-  });
-});
-
-// Using a PUT request to "unsave" an article
-app.put("/delete/:id", function(req, res) {
-  // Delete an article based on its ObjectId
-  Article.findOneAndUpdate({ "_id": req.params.id }, { "saved": req.body.saved })
-  // Execute the above query
-    .exec(function(err, doc) {
-      // Log any errors
-      if (err) {
-        console.log(err);
-      }
-      else {
-        // Or send the document to the browser
-        console.log(doc);
-      }
-    });
-  res.redirect("/saved");
-});
-
-// Trying to use a GET request to pull all saved notes associated with an article
-/*app.get("/saved/:id", function(req, res) {
-  // Grabbing every doc in the Notes array that is saved
-  Note.find({ saved: true }, function(error, doc) {
     // Logging any errors
     if (error) {
       console.log(error);
@@ -191,12 +155,31 @@ app.put("/delete/:id", function(req, res) {
       res.render("saved", articleObj);
     }
   });
-});*/
+});
 
-// Trying to use a GET request to pull all saved notes associated with an article 
-app.get("/saved/:id", function(req, res) {
+// Using a PUT request to "unsave" an article
+app.put("/delete/:id", function(req, res) {
+  // "Unsaving" an article based on its ObjectId
+  Article.findOneAndUpdate({ "_id": req.params.id }, { "saved": req.body.saved })
+  // Executing the above query
+    .exec(function(err, doc) {
+      // Logging any errors
+      if (err) {
+        console.log(err);
+      }
+      else {
+        // Logging to confirm "saved" status was successfully changed
+        console.log("Successfully removed: '%s'", doc.title);
+      }
+    });
+  res.redirect("/saved");
+});
+
+// Using a GET request to pull all saved notes associated with an article 
+app.get("/notes/:id", function(req, res) {
   // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
-  Article.findOne({ "_id": req.params.id })
+  console.log(req.params.id);
+  Article.find({ "_id": req.params.id })
   // Populating all of the notes associated with it
   .populate("note")
   // Executing the query
@@ -207,13 +190,16 @@ app.get("/saved/:id", function(req, res) {
     }
     // Sending the doc to the browser as a JSON object
     else {
-      res.json(doc);
+      var articleObj = {
+        article: doc
+      };
+      res.render("notes", articleObj);
     }
   });
 });
 
-// Using a POST request to create a new note or replace an existing note
-app.post("/saved/:id", function(req, res) {
+// Using a POST request to create a new note
+app.post("/notes/:id", function(req, res) {
   // Creating a new note and pass the req.body to the entry
   var newNote = new Note(req.body);
   // Saving the new note the db
@@ -224,23 +210,22 @@ app.post("/saved/:id", function(req, res) {
     }
     else {
       // Using the article id to find and update its note
-      Article.findOneAndUpdate({ "_id": req.params.id }, { "note": doc._id })
-      // Executing the above query
-      .exec(function(err, doc) {
+      Article.findOneAndUpdate({ "_id": req.params.id }, { $push: { "note": doc._id } }, { new: true }, function(err, doc) {
         // Logging any errors
         if (err) {
           console.log(err);
         }
         else {
+          console.log("New note: " + doc);
           // Sending the doc to the browser
-          res.send(doc);
+         res.redirect("/notes/" + req.params.id)
         }
       });
     }
   });
 });
 
-// Trying to use a PUT request to delete saved notes associated with an article 
+// Using a PUT request to delete saved notes associated with an article 
 app.put("/note/:id", function(req, res) {
   // Deleting a note based on its ObjectId
   Note.remove({ "_id": req.params.id })

@@ -13,53 +13,60 @@
 	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 	      <ul class="nav navbar-nav">
 	        <li><a href="/">Home</a></li>
-	        <li class="active"><a href="/saved">Saved Articles<span class="sr-only">(current)</span></a></li>
+	        <li><a href="/saved">Saved Articles</a></li>
 	      </ul>
 	    </div>
 	  </div>
 	</nav>
 
 	<div class="jumbotron">
-	  <h1 class="text-info">Saved Articles</h1>
+	  <h1 class="text-info">Article Notes</h1>
 	  <p class="text-info">New York Times Edition</p>
 	</div>
 
-	<div class="container" id="wrapper">			
-		<h1>NYT Articles</h1>
-		<h2>Saved Articles</h2>
+	<div class="container" id="wrapper">	
+		<div class="row">
+			<div class="col-md-12">		
+				{{#each article}}
+					<h1><a href="{{this.link}}" target="_blank">{{this.title}}</a></h1>
+					<form action="/notes/{{this._id}}" method="POST">
+						<div class="form-group">
+						  <label class="control-label" for="note"></label>
+						  <input type="text" class="form-control" id="note" name="note" placeholder="Your note...">
+						</div>
+						<button type="submit" class="add-note-btn btn btn-success" id="comment-btn">Add Note</button>
+					</form>
+				{{/each}}
+			</div>
+		</div>
+
+		<hr>
+
 		{{#each article}}
+		{{#each this.note}}
 			<div class="row">
 				<div class="col-md-12">
 					<div class="panel panel-primary">
-						<div class="panel-heading">
+						<div class="panel-body">
 							<div class="row">
-								<div class="col-md-8">
-									<h3 class="article-title panel-title" data-id="{{this.id}}">
-										{{this.title}}
-									</h3>
+								<div class="col-md-10">
+									<h4>{{this.note}}</h4>
 								</div>
 								
 								<div class="col-md-2">
-									<form action="/notes/{{this._id}}" method="GET">
-										<button type="submit" class="add-note-btn btn btn-success" id="comment-btn">Comments</button>
+									<form action="/note/{{this._id}}?_method=PUT" method="POST">
+										<input type="hidden" name="delete-btn" value="false">
+										<button type="submit" class="delete-btn btn btn-danger">Delete Note</button>
 									</form>
 								</div>
-										
-								<div class="col-md-2">
-									<form action="/delete/{{this._id}}?_method=PUT" method="POST">
-							          	<input type="hidden" name="delete-btn" value="false">
-							          	<button type="submit" class="delete-btn btn btn-danger">Delete Article</button>
-							        </form>
-								</div>
-				        	</div>
+							</div>
 						</div>
 
-						<div class="article-link panel-body">
-							<a href="{{this.link}}" target="_blank">{{this.link}}</a>
-						</div>
+						
 					</div>
 				</div>
 			</div>
+		{{/each}}
 		{{/each}}
 	</div>
 
