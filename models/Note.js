@@ -6,7 +6,7 @@ var Schema = mongoose.Schema;
 
 // Creating note schema
 var NoteSchema = new Schema({
-  // body is a string
+  // note is a string
   note: {
     type: String
   }
