@@ -14,7 +14,7 @@ var cheerio = require("cheerio");
 // Setting mongoose to leverage built in JavaScript ES6 Promises
 mongoose.Promise = Promise;
 
-
+// GET THE HEROKU DONE ASAP
 /*******************************************/
 // SETTING UP THE EXPRESS APP
 var app = express();
