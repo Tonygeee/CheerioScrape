@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lockwoni/cheerio-news.git"
+    "url": "https://github.com/Tonygeee/CheerioScrape.git"
   },
   "author": "NL",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/lockwoni/cheerio-news/issues"
+    "url": ""
   },
-  "homepage": "https://github.com/lockwoni/cheerio-news#readme",
+  "homepage": "",
   "dependencies": {
     "body-parser": "^1.17.2",
     "cheerio": "^0.22.0",
